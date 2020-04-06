@@ -1,0 +1,84 @@
+datasource DS {
+  provider = "sqlite"
+  url = env("DATABASE_URL")
+}
+
+generator photonjs {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+// Define your own datamodels here and run `yarn redwood db save` to create
+// migrations for them.
+
+model Project {
+  id String @id @default(cuid())
+  name String @unique
+  isPrivate Boolean @default(value: false)
+  reviews Review[]
+  actions Action[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Baseline {
+  id String @id @default(cuid())
+  name String @unique
+  isPrivate Boolean @default(value: false)
+  reviews Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Topic {
+  id String @id @default(cuid())
+  name String
+  description String
+  labels Label[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Label {
+  id String @id @default(cuid())
+  name String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id String @id @default(cuid())
+  isPrivate Boolean @default(value: false)
+  project Project
+  baseline Baseline
+  ratings Rating[]
+  actions Action[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Rating {
+  id String @id @default(cuid())
+  review Review
+  topic Topic
+  value RatingValue?
+  notes String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Action {
+  id String @id @default(cuid())
+  review Review
+  topic Topic
+  isDone Boolean @default(value: false)
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum RatingValue {
+  Happy
+  Acceptable
+  Unhappy
+}
